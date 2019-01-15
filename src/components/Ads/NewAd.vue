@@ -53,8 +53,9 @@
                     <v-flex xs12>
                         <v-spacer></v-spacer>
                         <v-btn
+                                :loading="loading"
                                 class="primary"
-                                :disabled="!valid"
+                                :disabled="!valid || loading"
                                 @click="createAd"
                         >Create new ad</v-btn>
                     </v-flex>
@@ -77,6 +78,11 @@
         ]
       }
     },
+    computed: {
+      loading () {
+        return this.$store.getters.loading
+      }
+    },
     methods: {
       createAd () {
         if (this.$refs.form.validate()) {
@@ -88,6 +94,10 @@
           }
 
           this.$store.dispatch('createAd', ad)
+            .then(() => {
+              this.$router.push('/list')
+            })
+            .catch(() => {})
         }
       }
     }
