@@ -1,10 +1,10 @@
 import * as firebase from 'firebase'
 
 class Ad {
-  constructor (title, description, imgSrc = '', ownerId, promo = false, id = null) {
+  constructor (title, description, imageSrc = '', ownerId, promo = false, id = null) {
     this.title = title
     this.description = description
-    this.imgSrc = imgSrc
+    this.imageSrc = imageSrc
     this.ownerId = ownerId
     this.promo = promo
     this.id = id
@@ -14,33 +14,14 @@ class Ad {
 
 export default {
   state: {
-    ads: [
-      {
-        title: 'First ad',
-        description: 'This is description',
-        promo: false,
-        imgSrc: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
-        id: '1232'
-      },
-      {
-        title: 'Second ad',
-        description: 'This is description',
-        promo: true,
-        imgSrc: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
-        id: '1233'
-      },
-      {
-        title: 'Third ad',
-        description: 'This is description',
-        promo: true,
-        imgSrc: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
-        id: '1234'
-      }
-    ]
+    ads: []
   },
   mutations: {
     createAd (state, payload) {
       state.ads.push(payload)
+    },
+    loadAds (state, payload) {
+      state.ads = payload
     }
   },
   actions: {
@@ -51,16 +32,46 @@ export default {
         const newAd = new Ad(
           payload.title,
           payload.description,
-          payload.imgSrc,
+          '',
           getters.user.id,
           payload.promo
         )
+        const image = payload.image
         const ad = await firebase.database().ref('ads').push(newAd)
-        commit('setLoading', false)
-        commit('createAd', {
-          ...newAd,
-          id: ad.key
+        const imageExt = image.name.slice(image.name.lastIndexOf('.'))
+        const fileData = await firebase.storage().ref(`ads/${ad.key}.${imageExt}`).put(image)
+        fileData.ref.getDownloadURL().then(function (url) {
+          firebase.database().ref('ads').child(ad.key).update({
+            imageSrc: url
+          })
+          commit('setLoading', false)
+          commit('createAd', {
+            ...newAd,
+            id: ad.key,
+            imageSrc: url
+          })
         })
+      } catch (error) {
+        commit('setError', error.message)
+        commit('setLoading', false)
+        throw error
+      }
+    },
+    async fetchAds ({commit}) {
+      commit('clearError')
+      commit('setLoading', true)
+      const resAds = []
+      try {
+        const dbVal = await firebase.database().ref('ads').once('value')
+        const ads = dbVal.val()
+        Object.keys(ads).forEach(key => {
+          const ad = ads[key]
+          resAds.push(
+            new Ad(ad.title, ad.description, ad.imageSrc, ad.ownerId, ad.promo, key)
+          )
+        })
+        commit('loadAds', resAds)
+        commit('setLoading', false)
       } catch (error) {
         commit('setError', error.message)
         commit('setLoading', false)

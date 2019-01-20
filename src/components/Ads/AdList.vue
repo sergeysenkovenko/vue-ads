@@ -11,7 +11,7 @@
                     <v-layout row>
                         <v-flex xs5>
                             <v-img
-                                :src="ad.imgSrc"
+                                :src="ad.imageSrc"
                                 height="180px"
                             >
                             </v-img>

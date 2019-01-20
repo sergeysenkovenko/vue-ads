@@ -3,7 +3,7 @@
         <v-layout row>
             <v-flex xs12 sm8 offset-sm2>
                 <v-card>
-                    <v-img :src="ad.imgSrc"
+                    <v-img :src="ad.imageSrc"
                            height="300px"
                     >
                     </v-img>

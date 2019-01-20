@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="!loading">
         <v-container>
             <v-layout row>
                 <v-flex xs12>
@@ -7,7 +7,7 @@
                         <v-carousel-item
                             v-for="ad in promoAds"
                             :key="ad.id"
-                            :src="ad.imgSrc"
+                            :src="ad.imageSrc"
                         >
                             <div class="car-link">
                                 <v-btn class="warning" :to="'/ad/' + ad.id">{{ ad.title }}</v-btn>
@@ -28,8 +28,8 @@
                 >
                     <v-card>
                         <v-img
-                                :src="ad.imgSrc"
-                                aspect-ratio="2.75"
+                                :src="ad.imageSrc"
+                                aspect-ratio="2"
                         ></v-img>
 
                         <v-card-title primary-title>
@@ -49,7 +49,20 @@
             </v-layout>
         </v-container>
     </div>
-
+    <div v-else>
+        <v-container>
+            <v-layout>
+                <v-flex xs-12 class="text-xs-center pt-5">
+                    <v-progress-circular
+                            indeterminate
+                            :size="70"
+                            :width="5"
+                            color="primary"
+                    ></v-progress-circular>
+                </v-flex>
+            </v-layout>
+        </v-container>
+    </div>
 </template>
 
 <script>
@@ -60,6 +73,9 @@
         },
         promoAds () {
           return this.$store.getters.adsPromo
+        },
+        loading () {
+          return this.$store.getters.loading
         }
       }
     }

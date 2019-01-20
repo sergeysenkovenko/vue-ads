@@ -26,16 +26,24 @@
                     <v-flex xs12>
                         <v-btn
                                 class="warning"
+                                @click="uploadTrigger"
                         >
                             Upload
                             <v-icon right dark>cloud_upload</v-icon>
                         </v-btn>
+                        <input
+                                ref="fileInput"
+                                type="file"
+                                accept="image/*"
+                                style="display: none;"
+                                @change="onFileChange"
+                        >
                     </v-flex>
                 </v-layout>
 
                 <v-layout row mt-3>
                     <v-flex xs12>
-                        <img src="https://cdn.vuetifyjs.com/images/carousel/planet.jpg" alt="" height="150">
+                        <img :src="imageSrc" alt="" height="150" v-if="imageSrc">
                     </v-flex>
                 </v-layout>
 
@@ -55,7 +63,7 @@
                         <v-btn
                                 :loading="loading"
                                 class="primary"
-                                :disabled="!valid || loading"
+                                :disabled="!valid ||!image || loading"
                                 @click="createAd"
                         >Create new ad</v-btn>
                     </v-flex>
@@ -72,6 +80,8 @@
         valid: false,
         title: '',
         description: '',
+        image: null,
+        imageSrc: '',
         promo: false,
         reqRules: [
           v => !!v || 'Description is required'
@@ -85,12 +95,12 @@
     },
     methods: {
       createAd () {
-        if (this.$refs.form.validate()) {
+        if (this.$refs.form.validate() && this.image) {
           const ad = {
             title: this.title,
             description: this.description,
             promo: this.promo,
-            imgSrc: 'https://proglib.io/wp-content/uploads/2018/07/1_qnI8K0Udjw4lciWDED4HGw.png'
+            image: this.image
           }
 
           this.$store.dispatch('createAd', ad)
@@ -99,6 +109,18 @@
             })
             .catch(() => {})
         }
+      },
+      uploadTrigger () {
+        this.$refs.fileInput.click()
+      },
+      onFileChange (event) {
+        const file = event.target.files[0]
+        const reader = new FileReader()
+        reader.onload = e => {
+          this.imageSrc = reader.result
+        }
+        reader.readAsDataURL(file)
+        this.image = file
       }
     }
   }
