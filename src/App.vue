@@ -132,24 +132,4 @@ export default {
     .pointer{
         cursor: pointer;
     }
-    .v-toolbar{
-        background: rgba(0,0,0, 0.6);
-    }
-    .video-back{
-        position: absolute;
-        top:-100px;
-        left:0;
-        min-width: 100%;
-        min-height: calc(100vh + 100px);
-        overflow: hidden;
-        object-fit: cover;
-    }
-    .video-overlay{
-        position: absolute;
-        top:0;
-        left:0;
-        min-width: 100%;
-        width: 100%;
-        min-height: 100vh;
-    }
 </style>

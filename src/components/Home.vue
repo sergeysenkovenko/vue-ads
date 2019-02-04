@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!loading">
+    <div v-if="!loading && ads.length !== 0">
         <v-container>
             <v-layout row>
                 <v-flex xs12>
@@ -26,7 +26,7 @@
                     v-for="ad in ads"
                     :key="ad.id"
                 >
-                    <v-card>
+                    <v-card height="100%">
                         <v-img
                                 :src="ad.imageSrc"
                                 aspect-ratio="2"
@@ -34,17 +34,26 @@
 
                         <v-card-title primary-title>
                             <div>
-                                <h3 class="headline mb-0">{{ ad.title }}</h3>
-                                <div>{{ ad.description }}</div>
+                                <h3 class="headline mb-2" height="100%">{{ ad.title }}</h3>
+                                <div class="text">{{ ad.description }}</div>
                             </div>
                         </v-card-title>
 
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn flat color="primary" :to="'/ad/' + ad.id">Show More</v-btn>
-                            <v-btn raised color="primary">Buy</v-btn>
+                            <BuyModal :ad="ad"></BuyModal>
                         </v-card-actions>
                     </v-card>
+                </v-flex>
+            </v-layout>
+        </v-container>
+    </div>
+    <div v-else-if="!loading && ads.length === 0">
+        <v-container>
+            <v-layout row>
+                <v-flex xs12 class="text-xs-center">
+                    <h1 class="text--secondary">No ads posted yet</h1>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -66,7 +75,11 @@
 </template>
 
 <script>
+    import BuyModal from '../components/Shared/BuyModal'
     export default {
+      components: {
+        BuyModal
+      },
       computed: {
         ads () {
           return this.$store.getters.ads
@@ -91,5 +104,13 @@
         bottom: 60px;
         left:50%;
         transform: translateX(-50%);
+    }
+    .text{
+        height: 40px;
+        overflow: hidden;
+    }
+    .headline{
+        height: 32px;
+        overflow: hidden;
     }
 </style>

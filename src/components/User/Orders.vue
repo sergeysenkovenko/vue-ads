@@ -1,8 +1,16 @@
 <template>
     <v-container>
         <v-layout row>
-            <v-flex xs12 sm6 offset-sm3>
-                <h1 class="text--secondary mb-3">Orders</h1>
+            <v-flex xs-12 class="text-xs-center pt-5" v-if="loading">
+                <v-progress-circular
+                        indeterminate
+                        :size="70"
+                        :width="5"
+                        color="primary"
+                ></v-progress-circular>
+            </v-flex>
+            <v-flex xs12 sm6 offset-sm3 v-else-if="!loading && orders.length !== 0">
+                <h1 class="text--secondary mb-3">Your orders</h1>
                 <v-list subheader two-line>
                     <v-list-tile v-for="order in orders" :key="order.id">
                         <v-list-tile-action>
@@ -21,11 +29,14 @@
                         <v-list-tile-action>
                             <v-btn
                                     class="primary"
-                                    :to="'/ad/' + order.adID"
+                                    :to="'/ad/' + order.adId"
                             >Open</v-btn>
                         </v-list-tile-action>
                     </v-list-tile>
                 </v-list>
+            </v-flex>
+            <v-flex xs-12 class="text-xs-center" v-else>
+                <h1 class="text--secondary">You haven't orders yet</h1>
             </v-flex>
         </v-layout>
     </v-container>
@@ -33,23 +44,21 @@
 
 <script>
   export default {
-    data () {
-      return {
-        orders: [
-          {
-            id: '31231232',
-            name: 'Rob',
-            phone: '0554353485',
-            adID: '312312',
-            done: false
-          }
-        ]
+    computed: {
+      orders () {
+        return this.$store.getters.orders
+      },
+      loading () {
+        return this.$store.getters.loading
       }
     },
     methods: {
       markDone (order) {
         order.done = true
       }
+    },
+    created () {
+      this.$store.dispatch('fetchOrders')
     }
   }
 </script>

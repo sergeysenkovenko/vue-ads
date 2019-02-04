@@ -9,6 +9,7 @@
                     <v-card-text>
                         <v-form ref="form" v-model="valid" lazy-validation>
                             <v-text-field
+                                    @keyup.enter="onSubmit"
                                     prepend-icon="person"
                                     name="email"
                                     label="Email"
@@ -18,6 +19,7 @@
                             >
                             </v-text-field>
                             <v-text-field
+                                    @keyup.enter="onSubmit"
                                     prepend-icon="lock"
                                     name="password"
                                     label="Password"
